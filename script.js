@@ -1,18 +1,21 @@
-import { syncChat, sendMsg } from './lib/chat.js';
-import { initMusic } from './lib/music.js';
+// js/script.js
 import { checkSession } from './lib/session.js';
-import { loadStore } from './store.js';
+import { syncChat, sendMsg } from './lib/chat.js';
+import { initMusic, searchMusic } from './lib/music.js';
 
-window.tab = (t) => {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(`p-${t}`).classList.add('active');
-};
+// 1. Cek Sesi agar Akun Tidak Hilang
+const me = checkSession(); 
 
-document.getElementById('btn-send').onclick = sendMsg;
+if (me) {
+    // 2. Aktifkan Fitur Real-time
+    syncChat();
+    initMusic();
 
-// Inisialisasi
-checkSession();
-syncChat();
-initMusic();
-loadStore();
-
+    // 3. Hubungkan ke Tombol HTML agar bisa diklik
+    window.handleSend = () => sendMsg('text');
+    window.handleSearchMusic = () => searchMusic();
+    window.tab = (t) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(`p-${t}`).classList.add('active');
+    };
+}
