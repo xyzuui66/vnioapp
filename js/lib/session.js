@@ -1,18 +1,21 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
-
+// js/lib/session.js
 export function checkSession() {
-    const auth = getAuth();
-    
-    // Sistem ini menjaga akun agar TIDAK hilang saat web direfresh [cite: 2025-12-30]
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User sudah login, ambil datanya
-            console.log("User aktif:", user.displayName);
-            document.getElementById('user-avatar').src = user.photoURL || 'default-avatar.png';
-        } else {
-            // Jika tidak ada user, arahkan ke login.html
-            window.location.href = 'login.html';
-        }
-    });
+    // Mengambil data dari localStorage untuk akses cepat agar akun tidak hilang [cite: 2025-12-30]
+    const savedUser = localStorage.getItem('cezi_v12_user');
+
+    if (savedUser) {
+        const user = JSON.parse(savedUser);
+        console.log("Sesi aktif: " + user.name);
+        
+        // Update avatar di header secara otomatis
+        const avatarImg = document.getElementById('user-avatar');
+        if (avatarImg) avatarImg.src = user.avatar;
+        
+        return user;
+    } else {
+        // Jika tidak ada sesi, paksa login kembali
+        window.location.href = 'login.html';
+        return null;
+    }
 }
 
